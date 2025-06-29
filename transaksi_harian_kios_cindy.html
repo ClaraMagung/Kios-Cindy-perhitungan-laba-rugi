@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Data Transaksi Harian - Kios Cindy</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+  body {
+    background: url('1.jpeg') no-repeat center center fixed;
+    background-size: cover;
+    padding-top: 70px;
+  }
+  .navbar {
+    backdrop-filter: blur(8px);
+  }
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">KIOS CINDY</a>
+    <button class="btn btn-danger btn-sm ms-auto" onclick="logout()"><i class="fa-solid fa-sign-out-alt"></i> Logout</button>
+  </div>
+</nav>
+
+<!-- Konten -->
+<div class="container my-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="text-white">Transaksi Harian</h2>
+    <div class="btn-group">
+      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalPenjualan"><i class="fa fa-cart-plus"></i> Penjualan</button>
+      <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalPembelian"><i class="fa fa-cart-arrow-down"></i> Pembelian</button>
+      <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalBiaya"><i class="fa fa-money-bill-wave"></i> Biaya Operasional</button>
+    </div>
+  </div>
+
+  <!-- Tabel Riwayat Transaksi -->
+  <div class="bg-white rounded shadow-sm p-3 mb-4">
+    <h4 class="mb-3">Riwayat Transaksi</h4>
+    <table class="table table-bordered table-striped align-middle">
+      <thead class="table-primary">
+        <tr>
+          <th>No</th>
+          <th>Jenis</th>
+          <th>Nama Barang</th>
+          <th>Jumlah</th>
+          <th>Total (Rp)</th>
+          <th>Tanggal</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="transaksiTableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal Penjualan -->
+<div class="modal fade" id="modalPenjualan" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title"><i class="fa fa-cart-plus"></i> Tambah Penjualan</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="penjualanForm">
+          <div class="mb-3">
+            <label>Nama Barang</label>
+            <select class="form-select" id="selectBarang" required></select>
+          </div>
+          <div class="mb-3">
+            <label>Jumlah</label>
+            <input class="form-control" id="jumlahBarang" type="number" required min="1">
+          </div>
+          <div class="mb-3">
+            <label>Harga per Unit (Rp)</label>
+            <input class="form-control" id="hargaBarang" type="number" required readonly>
+          </div>
+          <button class="btn btn-primary w-100" type="submit">Simpan</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Pembelian -->
+<div class="modal fade" id="modalPembelian" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title"><i class="fa fa-cart-arrow-down"></i> Tambah Pembelian</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="pembelianForm">
+          <div class="mb-3">
+            <label>Nama Barang</label>
+            <input class="form-control" id="namaBarangPembelian" required>
+          </div>
+          <div class="mb-3">
+            <label>Jumlah</label>
+            <input class="form-control" id="jumlahBarangPembelian" type="number" min="1" required>
+          </div>
+          <div class="mb-3">
+            <label>Harga per Unit (Rp)</label>
+            <input class="form-control" id="hargaPembelian" type="number" min="1" required>
+          </div>
+          <button class="btn btn-success w-100" type="submit">Simpan</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Biaya Operasional -->
+<div class="modal fade" id="modalBiaya" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-warning text-dark">
+        <h5 class="modal-title"><i class="fa fa-money-bill-wave"></i> Tambah Biaya Operasional</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="biayaOperasionalForm">
+          <div class="mb-3">
+            <label>Nama Biaya</label>
+            <input class="form-control" id="namaBiaya" required>
+          </div>
+          <div class="mb-3">
+            <label>Jumlah (Rp)</label>
+            <input class="form-control" id="jumlahPengeluaranOperasional" type="number" min="0" required>
+          </div>
+          <button class="btn btn-warning w-100" type="submit">Simpan</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script>
+  const transaksiData = JSON.parse(localStorage.getItem('transaksiData')) || [];
+
+  function saveData() {
+    localStorage.setItem('transaksiData', JSON.stringify(transaksiData));
+  }
+
+  function updateTable() {
+    const body = document.getElementById('transaksiTableBody');
+    body.innerHTML = '';
+    transaksiData.forEach((t, i) => {
+      body.innerHTML += `
+        <tr>
+          <td>${i + 1}</td>
+          <td>${t.jenis}</td>
+          <td>${t.namaBarang}</td>
+          <td>${t.jumlah || ''}</td>
+          <td>Rp ${t.total}</td>
+          <td>${t.tanggal}</td>
+          <td>
+            <button class="btn btn-sm btn-danger" onclick="hapus(${i})"><i class="fa fa-trash-alt"></i></button>
+          </td>
+        </tr>`;
+    });
+  }
+
+  function loadBarangKeDropdown() {
+    const barangList = JSON.parse(localStorage.getItem('barangList')) || [];
+    const select = document.getElementById('selectBarang');
+    select.innerHTML = '<option value="">Pilih Barang...</option>';
+
+    barangList.forEach((barang, i) => {
+      const option = document.createElement('option');
+      option.value = i;
+      option.textContent = `${barang.nama} - Rp ${barang.harga.toLocaleString()}`;
+      option.setAttribute('data-harga', barang.harga);
+      select.appendChild(option);
+    });
+  }
+
+  document.getElementById('selectBarang').addEventListener('change', function () {
+    const selectedOption = this.options[this.selectedIndex];
+    const harga = selectedOption.getAttribute('data-harga');
+    document.getElementById('hargaBarang').value = harga || '';
+  });
+
+  document.getElementById('penjualanForm').onsubmit = e => {
+    e.preventDefault();
+    const barangIndex = document.getElementById('selectBarang').value;
+    const barangList = JSON.parse(localStorage.getItem('barangList')) || [];
+    const barang = barangList[barangIndex];
+    if (!barang) return alert("Barang tidak ditemukan!");
+
+    const jumlah = parseInt(document.getElementById('jumlahBarang').value);
+    const total = barang.harga * jumlah;
+
+    transaksiData.push({
+      jenis: 'Penjualan',
+      namaBarang: barang.nama,
+      jumlah,
+      total,
+      tanggal: new Date().toLocaleDateString()
+    });
+
+    saveData();
+    updateTable();
+    e.target.reset();
+    bootstrap.Modal.getInstance(document.getElementById('modalPenjualan')).hide();
+  };
+
+  document.getElementById('pembelianForm').onsubmit = e => {
+    e.preventDefault();
+    const namaBarang = document.getElementById('namaBarangPembelian').value;
+    const jumlah = parseInt(document.getElementById('jumlahBarangPembelian').value);
+    const harga = parseFloat(document.getElementById('hargaPembelian').value);
+    transaksiData.push({jenis:'Pembelian', namaBarang, jumlah, total: jumlah*harga, tanggal:new Date().toLocaleDateString()});
+    saveData();
+    updateTable();
+    e.target.reset();
+    bootstrap.Modal.getInstance(document.getElementById('modalPembelian')).hide();
+  };
+
+  document.getElementById('biayaOperasionalForm').onsubmit = e => {
+    e.preventDefault();
+    const namaBarang = document.getElementById('namaBiaya').value;
+    const total = parseFloat(document.getElementById('jumlahPengeluaranOperasional').value);
+    transaksiData.push({jenis:'Biaya Operasional', namaBarang, jumlah:null, total, tanggal:new Date().toLocaleDateString()});
+    saveData();
+    updateTable();
+    e.target.reset();
+    bootstrap.Modal.getInstance(document.getElementById('modalBiaya')).hide();
+  };
+
+  function hapus(idx) {
+    if(confirm('Hapus data ini?')) {
+      transaksiData.splice(idx,1); saveData(); updateTable();
+    }
+  }
+
+  function logout() {
+    window.location.href = 'index.php';
+  }
+
+  updateTable();
+  loadBarangKeDropdown();
+</script>
+</body>
+</html>

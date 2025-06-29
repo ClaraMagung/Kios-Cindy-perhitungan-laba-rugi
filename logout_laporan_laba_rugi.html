@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logout - Kios Cindy</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .logout-container {
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            width: 300px;
+        }
+        .logout-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logout-container button {
+            width: 100%;
+            padding: 15px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .logout-container button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<div class="logout-container">
+    <h2>Logout</h2>
+    <button onclick="logout()">Logout</button>
+</div>
+
+<script>
+    function logout() {
+        // Menghapus informasi login dari session atau lokal storage (misalnya)
+        // Simulasikan dengan penghapusan sesion
+        alert("Logout berhasil!");
+        // Redirect ke halaman login
+        window.location.href = "index.php"; // Ubah URL sesuai halaman login Anda
+    }
+</script>
+
+</body>
+</html>
