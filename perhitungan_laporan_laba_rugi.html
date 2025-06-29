@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Laporan Laba Rugi - Kios Cindy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: url('img/1.jpeg') no-repeat center center fixed;
+      background-size: cover;
+      padding-top: 70px;
+    }
+    .navbar {
+      backdrop-filter: blur(8px);
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">KIOS CINDY</a>
+    <button class="btn btn-danger btn-sm ms-auto" onclick="logout()">Logout</button>
+  </div>
+</nav>
+
+<!-- Konten -->
+<div class="container my-4">
+  <h2 class="text-white mb-4">Laporan Laba Rugi</h2>
+
+  <!-- Filter -->
+  <div class="row mb-3">
+    <div class="col-md-4">
+      <label class="text-white">Tanggal Awal</label>
+      <input type="date" id="tanggalAwal" class="form-control">
+    </div>
+    <div class="col-md-4">
+      <label class="text-white">Tanggal Akhir</label>
+      <input type="date" id="tanggalAkhir" class="form-control">
+    </div>
+    <div class="col-md-4">
+      <label class="text-white">Periode</label>
+      <select id="periode" class="form-select">
+        <option value="harian">Harian</option>
+        <option value="bulanan" selected>Bulanan</option>
+        <option value="tahunan">Tahunan</option>
+      </select>
+    </div>
+  </div>
+  <button class="btn btn-primary mb-3" onclick="generateReport()">Tampilkan Laporan</button>
+
+  <!-- Hasil Laporan -->
+  <div id="laporan" class="bg-white rounded p-4 shadow-sm"></div>
+</div>
+
+<script>
+  function logout() {
+    window.location.href = 'index.php';
+  }
+
+  function generateReport() {
+    const transaksi = JSON.parse(localStorage.getItem('transaksiData')) || [];
+    const tAwal = new Date(document.getElementById('tanggalAwal').value);
+    const tAkhir = new Date(document.getElementById('tanggalAkhir').value);
+
+    const terfilter = transaksi.filter(t => {
+      const tgl = new Date(t.tanggal);
+      return tgl >= tAwal && tgl <= tAkhir;
+    });
+
+    let pendapatan = 0, hpp = 0, biaya = 0;
+    const rincianBiaya = {};
+
+    terfilter.forEach(t => {
+      if (t.jenis === 'Penjualan') pendapatan += t.total;
+      else if (t.jenis === 'Pembelian') hpp += t.total;
+      else if (t.jenis === 'Biaya Operasional') {
+        biaya += t.total;
+        rincianBiaya[t.namaBarang] = (rincianBiaya[t.namaBarang] || 0) + t.total;
+      }
+    });
+
+    const labaKotor = pendapatan - hpp;
+    const labaOperasional = labaKotor - biaya;
+    const pajak = labaOperasional * 0.1;
+    const labaBersih = labaOperasional - pajak;
+
+    let laporanHTML = `
+      <h4 class="mb-3">Periode: ${tAwal.toLocaleDateString()} - ${tAkhir.toLocaleDateString()}</h4>
+      <table class="table table-bordered">
+        <tr><th colspan="2">Pendapatan</th></tr>
+        <tr><td>Pendapatan Penjualan</td><td>Rp ${pendapatan.toLocaleString()}</td></tr>
+        <tr><th>Total Pendapatan</th><th>Rp ${pendapatan.toLocaleString()}</th></tr>
+
+        <tr><th colspan="2">Harga Pokok Penjualan</th></tr>
+        <tr><td>HPP</td><td>Rp ${hpp.toLocaleString()}</td></tr>
+        <tr><th>Total HPP</th><th>(Rp ${hpp.toLocaleString()})</th></tr>
+
+        <tr><th colspan="2">Total Laba Kotor</th></tr>
+        <tr><td colspan="2"><strong>Rp ${labaKotor.toLocaleString()}</strong></td></tr>
+
+        <tr><th colspan="2">Biaya Operasional</th></tr>
+        ${Object.entries(rincianBiaya).map(([nama, total]) => `<tr><td>${nama}</td><td>Rp ${total.toLocaleString()}</td></tr>`).join('')}
+        <tr><th>Total Biaya Operasional</th><th>(Rp ${biaya.toLocaleString()})</th></tr>
+
+        <tr><th>Laba Bersih Operasional</th><th>Rp ${labaOperasional.toLocaleString()}</th></tr>
+        <tr><td>Pajak (10%)</td><td>Rp ${pajak.toLocaleString()}</td></tr>
+        <tr class="table-success"><th>Laba Bersih</th><th>Rp ${labaBersih.toLocaleString()}</th></tr>
+      </table>
+    `;
+
+    document.getElementById('laporan').innerHTML = laporanHTML;
+  }
+</script>
+</body>
+</html>
